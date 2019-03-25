@@ -4,7 +4,7 @@
 
 Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
 
-### Graafikud ###
+### Analüüs graafilises liideses ###
 Selle abil on võimalik näha üldist analüüsi kontrolltöö logifaili kohta kasutajaliideses.
 Kasutajale kuvatakse järgnev informatsioon.
 * Üldinfo - Kuvatakse töö lahendamise algus- ja lõppaeg ning kestus. Samuti veateadete arv, käivitamiste kordade arv, veateadetega järgnenud käivitamiste kordade arv ning rohkem kui **n** tähemärki pikkade tekstilõikude kleepimiste arv, kus **n** on kasutaja poolt valitud minimaalse kleebitud teksti pikkus. Vaikeväärtus minimaalse kleebitud pikkuse jaoks on 0.
@@ -30,7 +30,7 @@ Selle abil saab kasutaja täpsustada, kui pikk peab olema välja sorteeritud kle
 
 1. Valida vähemalt üks töörežiim või soovi korral ka mõlemad.
 2. Soovi korral täpsustada lisaparameetrid.
-3. Valida fail klõpastes nuppu "Vali logifail (.txt)". Tegemist saab olla ainult txt-failivorminguga.
+3. Valida fail klõpastes nuppu "Vali logifail (.txt)". Tegemist saab olla ainult txt-failivorminguga ning peaks valima ainult korrektse logifaili.
 4. Kui valiti fail, siis genereeritakse vastavalt esimeses punktis tehtud valikule graafilisse liidesesse analüüs, CSV-failid või mõlemad.
 5. Kui on soov vaadelda uut logifaili, siis piisab ainult korrata punkti 3, kui ei ole soovi töörežiimi või lisaparameetreid muuta.
 
