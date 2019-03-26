@@ -1,5 +1,7 @@
 # Thonny logifailide analüüs
 
+Tegemist on bakalaureusetööna loodava programmiga, mis suudab automaatselt analüüsida kontrolltöödel kogutud logifaile.
+
 ## Töörežiimid ##
 
 Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
@@ -8,7 +10,7 @@ Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
 Selle abil on võimalik näha üldist analüüsi kontrolltöö logifaili kohta kasutajaliideses.
 Kasutajale kuvatakse järgnev informatsioon.
 * Üldinfo - Kuvatakse töö lahendamise algus- ja lõppaeg ning kestus. Samuti veateadete arv, käivitamiste kordade arv, veateadetega järgnenud käivitamiste kordade arv ning rohkem kui **n** tähemärki pikkade tekstilõikude kleepimiste arv, kus **n** on kasutaja poolt valitud minimaalse kleebitud teksti pikkus. Vaikeväärtus minimaalse kleebitud pikkuse jaoks on 0.
-* Erroritüübid - Sektrodiagramm, kus tuuakse välja erinevad veateated, mis kasutajal esinesid, ning nende esinemiste kordade arv.
+* Veatüübid - Sektrodiagramm, kus tuuakse välja erinevad veateated, mis kasutajal esinesid, ning nende esinemiste kordade arv.
 * Käivitamised - Sündmusegraafik, kus on näha ajajoonel käivitamised, millele järgnes veateade ehk programmi töös oli midagi valesti, ja käivitamised, millele ei järgnenud veateadet ehk programmitöö oli edukas.
 * Kleebitud tekstid - Tabel, kus kuvatakse vähemalt **n** pikkusega kleebitud tekstid koos ajatemplitega.
 * Veateated - Tabel, kus kuvatakse kasutajal esinenud veateated koos ajatemplitega ning tüübiga.
