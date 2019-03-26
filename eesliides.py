@@ -455,7 +455,7 @@ page1.grid_columnconfigure(0, weight=1)
 nb.add(page1, text="Üldinfo")
 
 page2 = Frame(nb)
-nb.add(page2, text="Erroritüübid")
+nb.add(page2, text="Veatüübid")
 
 page3 = Frame(nb)
 nb.add(page3, text="Käivitamised")
