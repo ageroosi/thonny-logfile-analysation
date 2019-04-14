@@ -1,5 +1,7 @@
 # Thonny logifailide analüüs
 
+Tegemist on bakalaureusetööna loodava programmiga, mis suudab automaatselt analüüsida kontrolltöödel kogutud logifaile.
+
 ## Töörežiimid ##
 
 Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
