@@ -1,54 +1,21 @@
 from tkinter import *
 from tkinter import (ttk, filedialog)
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.pyplot as plt ##
-import json
+import matplotlib.pyplot as plt
 import csv
-import dateutil.parser ##
-from collections import (Counter, defaultdict)
-import datetime
-import numpy as np ##
-
-start_time = datetime.datetime.now()
-end_time = datetime.datetime.now()
-running = []
-errors = []
-running_results_in_error = []
-salvestamiste_arv = 0
-pasted_text = []
-error_type = []
-error_message = []
-error_time = []
-pasted_text_time = []
+from collections import Counter
+import numpy as np
+import analysation
 
 # Function for finding the duration at the time when the event occurred
 def time_after_start(event_time, start_time):
     return (event_time - start_time).total_seconds() / 60.0
 
-# Author of the function is Heidi Meier
-
-# Function for understanding if the given key and the right value exist in the json element
-# If third argument is False, then the value has to be present in the right value
-# If third argument is True, then the value has to equal the right value
-def in_json(element, key, value, exact=True):
-    if key not in element:
-        return False
-    if exact:
-        return element[key] == value
-    else:
-        return element[key].find(value) != -1
-
-# Author of the function is Heidi Meier
-
-# Function for understanding whether the code running results in error
-# If json element text is ">>> ", then the element before that contains tag "error" or "stderr", if resulted in error
-def results_in_error(data, i):
-    while not in_json(data[i+1], "text", ">>> "):
-        i += 1
-    return in_json(data[i], "text_widget_class", "ShellText") and (in_json(data[i], "tags", "error", False) or in_json(data[i], "tags", "stderr", False))
-
 # Presentation of overall analysation of log file
-def present_overall_analysation():
+def present_overall_analysation(file_analysation):
+    start_time = file_analysation['start_time'][0]
+    end_time = file_analysation['end_time'][0]
+
     start_time_lbl = Label(page1, text="Ülesannete lahendamise algusaeg: " + str(start_time))
     start_time_lbl.grid(column=0, row=0, sticky="wn")
 
@@ -58,21 +25,21 @@ def present_overall_analysation():
     duration_lbl = Label(page1, text="Ülesannete lahendamise aeg: " + str(end_time - start_time))
     duration_lbl.grid(column=0, row=2, sticky="wn")
 
-    error_lbl = Label(page1, text="Vigade arv: " + str(len(error_type)))
+    error_lbl = Label(page1, text="Vigade arv: " + str(len(file_analysation['error_type'])))
     error_lbl.grid(column=0, row=3, sticky="wn")
 
-    running_lbl = Label(page1, text="Käivitamiste kordade arv: " + str(len(running)))
+    running_lbl = Label(page1, text="Käivitamiste kordade arv: " + str(len(file_analysation['running'])))
     running_lbl.grid(column=0, row=4, sticky="wn")
 
     error_after_running = 0
-    for value in running_results_in_error:
+    for value in file_analysation['running_results_in_error']:
         if value:
             error_after_running += 1
 
     error_after_running_lbl = Label(page1, text="Käivitamiste kordade arv, mis lõppevad veateatega: " + str(error_after_running))
     error_after_running_lbl.grid(column=0, row=5, sticky="wn")
 
-    pasted_lbl = Label(page1, text="Rohkem kui " + spin.get() + " tähemärki pikkade tekstilõikude kleepimiste arv: " + str(len(pasted_text)))
+    pasted_lbl = Label(page1, text="Rohkem kui " + spin.get() + " tähemärki pikkade tekstilõikude kleepimiste arv: " + str(len(file_analysation['pasted_text'])))
     pasted_lbl.grid(column=0, row=6, sticky="wn")
 
 # Function for plotting the pie chart of errors
@@ -91,7 +58,7 @@ def plot_pie_chart(errors):
         values.append(error_counter[elem])
 
     actual_figure = plt.figure(figsize=(8, 6))
-    actual_figure.suptitle("Erroritüübid", fontsize=15)
+    actual_figure.suptitle("Veatüübid", fontsize=15)
 
     plt.pie(values, labels=labels, autopct=lambda p: '{:.0f}'.format(p * sum(values) / 100), shadow=True)
 
@@ -100,7 +67,7 @@ def plot_pie_chart(errors):
     canvas.draw()
 
 # Function for plotting the event plot
-def event_plot():
+def event_plot(running, running_results_in_error, start_time):
     positions = [[], []]
 
     # Separating the code runnings that resulted in error and those that didn't
@@ -137,7 +104,7 @@ def event_plot():
 
     ax = plt.gca()
     ax.axes.yaxis.set_visible(False)
-    ax.legend(['Errorita', 'Erroriga'])
+    ax.legend(['Veateateta', 'Veateatega'])
     ax.set_xlabel('Minutid pärast alustamist')
 
     canvas = FigureCanvasTkAgg(event_figure, page3)
@@ -145,7 +112,7 @@ def event_plot():
     canvas.draw()
 
 # Function for making table
-def make_pasting_table():
+def make_pasting_table(pasted_text, pasted_text_time):
     page4.grid_columnconfigure(0, weight=1)
     page4.grid_rowconfigure(0, weight=1)
 
@@ -185,7 +152,7 @@ def make_pasting_table():
     frame.grid_columnconfigure(2, weight=1)
 
 # Function for making table
-def make_error_table():
+def make_error_table(error_time, error_type, error_message):
     page5.grid_columnconfigure(0, weight=1)
     page5.grid_rowconfigure(0, weight=1)
 
@@ -226,7 +193,7 @@ def make_error_table():
     frame.grid_columnconfigure(2, weight=1)
 
 def make_csv(filename, type, data, labels):
-    with open(filename[:-4] + "_" + type + ".csv", "w+") as data_file:
+    with open(filename[:-4] + "_" + type + ".csv", "w+", newline="") as data_file:
         data_file_writer = csv.writer(data_file, delimiter=",")
         data_file_writer.writerow(labels)
 
@@ -238,187 +205,40 @@ def make_csv(filename, type, data, labels):
 
 
 # Function for making csv files
-def make_csvs(filename):
-    global error_type
+def make_csvs(filename, file_analysation):
 
     # making csv with pasted text data
-    make_csv(filename, "pasting", [pasted_text_time, pasted_text], ["pasted_text_time", "pasted_text"])
+    make_csv(filename, "pasting", [file_analysation['pasted_text_time'], file_analysation['pasted_text']], ["pasted_text_time", "pasted_text"])
 
     #making csv with errors data
-    make_csv(filename, "errors", [error_time, error_type, error_message], ["error_time", "error_type", "error_message"])
+    make_csv(filename, "errors", [file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message']], ["error_time", "error_type", "error_message"])
 
     #making csv with runnings data
-    make_csv(filename, "runnings", [running, running_results_in_error], ["running", "running_results_in_error"])
+    make_csv(filename, "runnings", [file_analysation['running'], file_analysation['running_results_in_error']], ["running", "running_results_in_error"])
 
 #Function for log file analysation
 def file_analysis(filename):
-    logifail = open(filename)
-    data = json.load(logifail)  # sõnastike listina
-    logifail.close()
-
-    global running
-    global errors_amount
-    global errors
-    global salvestamiste_arv
-    global pasted_text
-    global error_message
-    global error_type
-    global pasted_text_time
-    global error_time
-    global running_results_in_error
-    global start_time
-    global end_time
-    text_dict = defaultdict(lambda: defaultdict(list))
-    text = defaultdict(list)
-
-    start_time = dateutil.parser.parse(data[0]["time"])
-    end_time = dateutil.parser.parse(data[-1]["time"])
-
-    running= []
-    errors_amount = []
-    errors = []
-    salvestamiste_arv = 0
-    pasted_text = []
-    error_message = []
-    error_type = []
-    pasted_text_time = []
-    error_time = []
-    running_results_in_error = []
-
-    for i in range(len(data)):
-        element = data[i]
-
-        if in_json(element, "sequence", "ShellCommand") and in_json(element, "command_text", "%Run", False):
-            running.append(dateutil.parser.parse(element["time"]))
-            running_results_in_error.append(results_in_error(data, i))
-        if in_json(element, "sequence", "TextInsert") and in_json(element, "text", "Error", False):
-            errors.append(element['text'])
-            error_time.append(dateutil.parser.parse(element["time"]))
-            error_type.append(element['text'].split(":", 1)[0])
-            error_message.append(element['text'].split(": ", 1)[1].strip('\n'))
-        if in_json(element, "sequence", "Save", False):
-            salvestamiste_arv += 1
-        if in_json(element, "sequence", "<<Paste>>"):
-            if len(data[i - 1]['text']) >= int(spin.get()):
-                pasted_text.append(data[i - 1]['text'])
-                pasted_text_time.append(dateutil.parser.parse(data[i - 1]["time"]))
-    '''if in_json(element, "text_widget_class", "CodeViewText") and in_json(element, "sequence", "TextInsert"):
-            for txt in text:
-                for elem in text[txt]:
-                    print(elem)
-            print(element)
-            widget_id = element["text_widget_id"]
-            line_index = int(element["index"].split(".", 1)[0])
-            column_index = int(element["index"].split(".", 1)[1])
-            #if "\n" in element["text"]:
-             #   print("jou")
-              #  print(element)
-               # print("jou")
-            if len(element["text"]) == 1:
-                if len(text[widget_id]) < line_index:
-                    text[widget_id].append([])
-                if element["text"] == "\n":
-                    text[widget_id].insert(line_index, [])
-                if len(text[widget_id][line_index - 1]) < column_index + 1:
-                    text[widget_id][line_index - 1].append(element["text"])
-                else:
-                    text[widget_id][line_index - 1].insert(column_index, element["text"])
-                if len(text_dict[widget_id]["text_amount"]) > 0:
-                    text_dict[widget_id]["text_amount"].append(text_dict[widget_id]["text_amount"][-1] + 1)
-                else:
-                    text_dict[widget_id]["text_amount"].append(1)
-                text_dict[widget_id]["text_time"].append(dateutil.parser.parse(element["time"]))
-            else:
-                rows = element["text"].split("\n")
-                print("tere")
-                print(element["text"])
-                print(rows)
-                amount = 0
-                for row in rows:
-                    if len(text[widget_id]) < line_index:
-                        text[widget_id].append([])
-                    if len(text[widget_id][line_index - 1]) < column_index + 1:
-                        for character in list(row):
-                            amount += 1
-                            text[widget_id][line_index - 1].append(character)
-                    else:
-                        for character in list(element["text"]):
-                            amount += 1
-                            text[widget_id][line_index - 1].insert(column_index, character)
-                    line_index += 1
-
-                if len(text_dict[widget_id]["text_amount"]) > 0:
-                    text_dict[widget_id]["text_amount"].append(
-                        text_dict[widget_id]["text_amount"][-1] + amount)
-                else:
-                    text_dict[widget_id]["text_amount"].append(amount)
-                text_dict[widget_id]["text_time"].append(dateutil.parser.parse(data[i]["time"]))
-        if in_json(element, "text_widget_class", "CodeViewText") and in_json(element, "sequence", "TextDelete"):
-            #print(text)
-            for txt in text:
-                for elem in text[txt]:
-                    print(elem)
-            print(element)
-            widget_id = element["text_widget_id"]
-            start_line_index = int(element["index1"].split(".", 1)[0])
-            start_column_index = int(element["index1"].split(".", 1)[1])
-            if element["index2"] == "None" or element["index1"] == element["index2"]:
-                text[widget_id][start_line_index - 1].pop(start_column_index)
-            else:
-                end_line_index = int(element["index2"].split(".", 1)[0])
-                end_column_index = int(element["index2"].split(".", 1)[1])
-                if end_line_index != start_line_index:
-                    while end_column_index != 0:
-                        end_column_index -= 1
-                        text[widget_id][end_line_index - 1].pop(end_column_index)
-                    if (len(text[widget_id][end_line_index - 1])) == 0:
-                        text[widget_id].pop(end_line_index - 1)
-                    end_line_index -= 1
-                    print(end_line_index)
-                    print(start_line_index)
-                    while end_line_index != start_line_index:
-                        text[widget_id].pop(end_line_index - 1)
-                        end_line_index -= 1
-                    while start_column_index != len(text[widget_id][start_line_index - 1]):
-                        text[widget_id][start_line_index - 1].pop()
-                    if (len(text[widget_id][start_line_index - 1])) == 0:
-                        text[widget_id].pop(start_line_index - 1)
-                else:
-                    while start_column_index != end_column_index:
-                        #print(text[widget_id][start_line_index-1])
-                        #print(end_column_index)
-                        #print(start_column_index)
-                        end_column_index -= 1
-                        text[widget_id][start_line_index - 1].pop(start_column_index)
-                    if (len(text[widget_id][start_line_index - 1])) == 0:
-                        text[widget_id].pop(start_line_index - 1)
-                    #text[widget_id][start_line_index - 1].pop(start_column_index)
-       # print(text)
-    for i in text:
-        for k in text[i]:
-            print("".join(k[:-1]))'''
+    file_analysation = analysation.analysation(filename, int(spin.get()))
     if chk_csv_var.get() == 1:
         lbl = Label(lbl_frame, text=filename.split("/")[-1])
         lbl.grid(column=0, row=1, sticky="e")
-        make_csvs(filename)
+        make_csvs(filename, file_analysation)
     if chk_graphic_var.get() == 1:
         lbl = Label(lbl_frame, text=filename.split("/")[-1])
         lbl.grid(column=0, row=1, sticky="e")
 
-        plot_pie_chart(error_type)
-        make_pasting_table()
-        make_error_table()
-        if (len(running) > 0):
-            event_plot()
-        present_overall_analysation()
+        plot_pie_chart(file_analysation['error_type'])
+        make_pasting_table(file_analysation['pasted_text'], file_analysation['pasted_text_time'])
+        make_error_table(file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message'])
+        if (len(file_analysation['running']) > 0):
+            event_plot(file_analysation['running'], file_analysation['running_results_in_error'], file_analysation['start_time'][0])
+        present_overall_analysation(file_analysation)
 
 
 # function for opening a file
 def file_dialog():
     if not (chk_csv_var.get() == 0 and chk_graphic_var.get() == 0):
-
         filename = filedialog.askopenfilename(initialdir="/", title="Vali fail", filetype=(("Text File", "*.txt"),))
-
         # Check if user actually chose some file
         if filename != "":
             for page in [page1, page2, page3, page4, page5]:
