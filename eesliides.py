@@ -4,8 +4,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import csv
 from collections import Counter
+from tkinter import messagebox
 import numpy as np
 import analysation
+
+filepath = ""
+initialdir = "/"
 
 # Function for finding the duration at the time when the event occurred
 def time_after_start(event_time, start_time):
@@ -203,55 +207,55 @@ def make_csv(filename, type, data, labels):
                 row += [d[i]]
             data_file_writer.writerow(row)
 
-
 # Function for making csv files
 def make_csvs(filename, file_analysation):
 
     # making csv with pasted text data
     make_csv(filename, "pasting", [file_analysation['pasted_text_time'], file_analysation['pasted_text']], ["pasted_text_time", "pasted_text"])
 
-    #making csv with errors data
+    # making csv with errors data
     make_csv(filename, "errors", [file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message']], ["error_time", "error_type", "error_message"])
 
-    #making csv with runnings data
+    # making csv with runnings data
     make_csv(filename, "runnings", [file_analysation['running'], file_analysation['running_results_in_error']], ["running", "running_results_in_error"])
 
+    messagebox.showinfo("CSV-failid", "CSV-failid salvestatud kausta " + initialdir)
+
+#todo: vigase logifaili puhul kasutajale teave
 #Function for log file analysation
-def file_analysis(filename):
-    file_analysation = analysation.analysation(filename, int(spin.get()))
-    if chk_csv_var.get() == 1:
-        lbl = Label(lbl_frame, text=filename.split("/")[-1])
-        lbl.grid(column=0, row=1, sticky="e")
-        make_csvs(filename, file_analysation)
-    if chk_graphic_var.get() == 1:
-        lbl = Label(lbl_frame, text=filename.split("/")[-1])
-        lbl.grid(column=0, row=1, sticky="e")
-
-        plot_pie_chart(file_analysation['error_type'])
-        make_pasting_table(file_analysation['pasted_text'], file_analysation['pasted_text_time'])
-        make_error_table(file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message'])
-        if (len(file_analysation['running']) > 0):
-            event_plot(file_analysation['running'], file_analysation['running_results_in_error'], file_analysation['start_time'][0])
-        present_overall_analysation(file_analysation)
-
+def file_analysis():
+    global filepath
+    if (chk_csv_var.get() != 0 or chk_graphic_var.get() != 0) and filepath != "":
+        file_analysation = analysation.analysation(filepath, int(spin.get()))
+        if chk_csv_var.get() == 1:
+            make_csvs(filepath, file_analysation)
+        if chk_graphic_var.get() == 1:
+            plot_pie_chart(file_analysation['error_type'])
+            make_pasting_table(file_analysation['pasted_text'], file_analysation['pasted_text_time'])
+            make_error_table(file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message'])
+            if len(file_analysation['running']) > 0:
+                event_plot(file_analysation['running'], file_analysation['running_results_in_error'], file_analysation['start_time'][0])
+            present_overall_analysation(file_analysation)
 
 # function for opening a file
 def file_dialog():
-    if not (chk_csv_var.get() == 0 and chk_graphic_var.get() == 0):
-        filename = filedialog.askopenfilename(initialdir="/", title="Vali fail", filetype=(("Text File", "*.txt"),))
+    global filepath
+    global initialdir
+    if chk_csv_var.get() != 0 or chk_graphic_var.get() != 0:
+        chosen_filepath = filedialog.askopenfilename(initialdir=initialdir, title="Vali fail", filetypes=(("Text File", "*.txt"),))
         # Check if user actually chose some file
-        if filename != "":
-            for page in [page1, page2, page3, page4, page5]:
-                for widget in page.winfo_children():
-                    widget.destroy()
-            file_analysis(filename)
+        if chosen_filepath != "":
+            filepath = chosen_filepath
+            initialdir, filename = filepath.rsplit("/", 1)
+            lbl = Label(lbl_frame, text=filename)
+            lbl.grid(column=0, row=1, sticky="e")
 
 # GUI
 
 # window
 window = Tk()
 window.title("Thonny logifailide analüsaator")
-window.geometry('800x720')
+window.geometry('800x750')
 window.resizable(False, False)
 
 start_frame = Frame(window, bg="lightgrey")
@@ -287,21 +291,29 @@ page5 = Frame(nb)
 nb.add(page5, text="Veateated")
 
 chk_csv_var = IntVar()
-chk_csv = Checkbutton(start_frame, text='CSV-failid', variable=chk_csv_var)
+chk_csv = Checkbutton(start_frame, text='CSV-failid', variable=chk_csv_var, bg="lightgrey")
 chk_csv.grid(column=0, row=0, padx=5, pady=5, sticky="e")
 
 chk_graphic_var = IntVar()
-chk_graphic = Checkbutton(start_frame, text='Analüüs graafilises liideses', variable=chk_graphic_var)
+chk_graphic = Checkbutton(start_frame, text='Analüüs graafilises liideses', variable=chk_graphic_var, bg="lightgrey")
 chk_graphic.grid(column=1, row=0, padx=5, pady=5, sticky="w")
 
-lbl = Label(start_frame, text="Minimaalne kleebitud teksti pikkus: ")
-lbl.grid(column=0, row=1, sticky="e")
+pasted_frame = Frame(start_frame, bg="lightgrey")
+pasted_frame.grid(row=1, columnspan=2)
+pasted_frame.grid_columnconfigure(0, weight=1)
+pasted_frame.grid_columnconfigure(1, weight=1)
 
-spin = Spinbox(start_frame, from_=0, to=5000, width=5)
-spin.grid(column=1, row=1, sticky="w")
+lbl = Label(pasted_frame, text="Minimaalne kleebitud teksti pikkus: ", bg="lightgrey")
+lbl.grid(column=0, row=0, sticky="e", pady=5)
 
-button = ttk.Button(start_frame, text="Vali logifail (.txt)", command=file_dialog)
-button.grid(row=2, padx=5, pady=5, columnspan=2)
+spin = Spinbox(pasted_frame, from_=0, to=5000, width=5)
+spin.grid(column=1, row=0, sticky="w", pady=5)
+
+button = ttk.Button(start_frame, width=30, text="Vali logifail (.txt)", command=file_dialog)
+button.grid(row=2, columnspan=2, padx=5, pady=2)
+
+button = ttk.Button(start_frame, width=30, text="Tee analüüs", command=file_analysis)
+button.grid(row=3, columnspan=2, padx=5, pady=2)
 
 lbl_frame = Frame(start_frame)
 lbl_frame.grid(row=2, column=1)

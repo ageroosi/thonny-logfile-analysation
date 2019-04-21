@@ -15,13 +15,15 @@ def in_json(element, key, value, exact=True):
     else:
         return element[key].find(value) != -1
 
-# Author of the function is Heidi Meier
+# Author of the original function is Heidi Meier but it is modified to work with the newest Thonny
 
 # Function for understanding whether the code running results in error
 # If json element text is ">>> ", then the element before that contains tag "error" or "stderr", if resulted in error
 def results_in_error(data, i):
-    while not in_json(data[i+1], "text", ">>> "):
+    while (i + 2) != len(data) and not in_json(data[i+1], "text", ">>> "):
         i += 1
+    if in_json(data[i], "sequence", "ShowView"):
+        return in_json(data[i-1], "text_widget_class", "ShellText") and (in_json(data[i-1], "tags", "error", False) or in_json(data[i-1], "tags", "stderr", False))
     return in_json(data[i], "text_widget_class", "ShellText") and (in_json(data[i], "tags", "error", False) or in_json(data[i], "tags", "stderr", False))
 
 # Function for log file analysation
@@ -56,8 +58,12 @@ def analysation(filename, pasted_text_size):
         elif in_json(element, "sequence", "Save", False):
             analysation_dict['saving_time'].append(dateutil.parser.parse(element["time"]))
         # Fiding information about pasted texts
-        elif in_json(element, "sequence", "<<Paste>>"):
-            if len(data[i - 1]['text']) >= pasted_text_size:
+        elif in_json(element, "sequence", "<<Paste>>") and in_json(element, "text_widget_class", "CodeViewText"):
+            previous_element = data[i-1]
+            if 'text' not in previous_element:
+                continue
+            if len(previous_element['text']) >= pasted_text_size:
                 analysation_dict['pasted_text'].append(data[i-1]['text'])
                 analysation_dict['pasted_text_time'].append(dateutil.parser.parse(data[i - 1]["time"]))
     return analysation_dict
+#todo: kustutamine paremaks
