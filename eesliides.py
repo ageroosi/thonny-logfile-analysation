@@ -17,32 +17,41 @@ def time_after_start(event_time, start_time):
 
 # Presentation of overall analysation of log file
 def present_overall_analysation(file_analysation):
+    # Start and time of analysation
     start_time = file_analysation['start_time'][0]
     end_time = file_analysation['end_time'][0]
 
+    # Start time label
     start_time_lbl = Label(page1, text="Ülesannete lahendamise algusaeg: " + str(start_time))
     start_time_lbl.grid(column=0, row=0, sticky="wn")
 
+    # End time label
     end_time_lbl = Label(page1, text="Ülesannete lahendamise lõppaeg: " + str(end_time))
     end_time_lbl.grid(column=0, row=1, sticky="wn")
 
+    # Duration label
     duration_lbl = Label(page1, text="Ülesannete lahendamise aeg: " + str(end_time - start_time))
     duration_lbl.grid(column=0, row=2, sticky="wn")
 
+    # Amount of errors label
     error_lbl = Label(page1, text="Vigade arv: " + str(len(file_analysation['error_type'])))
     error_lbl.grid(column=0, row=3, sticky="wn")
 
+    # Label to show number of program runnings
     running_lbl = Label(page1, text="Käivitamiste kordade arv: " + str(len(file_analysation['running'])))
     running_lbl.grid(column=0, row=4, sticky="wn")
 
+    # Check to see if program running resulted in error
     error_after_running = 0
     for value in file_analysation['running_results_in_error']:
         if value:
             error_after_running += 1
 
+    # Label that shows runnings that resulted in error
     error_after_running_lbl = Label(page1, text="Käivitamiste kordade arv, mis lõppevad veateatega: " + str(error_after_running))
     error_after_running_lbl.grid(column=0, row=5, sticky="wn")
 
+    # Label that shows pasted texts that were longer than n characters
     pasted_lbl = Label(page1, text="Rohkem kui " + spin.get() + " tähemärki pikkade tekstilõikude kleepimiste arv: " + str(len(file_analysation['pasted_text'])))
     pasted_lbl.grid(column=0, row=6, sticky="wn")
 
@@ -64,8 +73,10 @@ def plot_pie_chart(errors):
     actual_figure = plt.figure(figsize=(8, 6))
     actual_figure.suptitle("Veatüübid", fontsize=15)
 
+    # Plotting pie chart
     plt.pie(values, labels=labels, autopct=lambda p: '{:.0f}'.format(p * sum(values) / 100), shadow=True)
 
+    # Showing pie chart in GUI
     canvas = FigureCanvasTkAgg(actual_figure, page2)
     canvas.get_tk_widget().grid(row=0, column=0)
     canvas.draw()
@@ -102,15 +113,18 @@ def event_plot(running, running_results_in_error, start_time):
         min += 5
         x.append(min)
 
+    # Plotting event plot
     plt.eventplot(positions, colors=colors1, lineoffsets=lineoffsets)
     plt.ylim((0.5, 2))
     plt.xticks(x)
 
+    # Adding legends
     ax = plt.gca()
     ax.axes.yaxis.set_visible(False)
     ax.legend(['Veateateta', 'Veateatega'])
     ax.set_xlabel('Minutid pärast alustamist')
 
+    # Showing event plot in the GUI
     canvas = FigureCanvasTkAgg(event_figure, page3)
     canvas.get_tk_widget().grid(row=0, column=0)
     canvas.draw()
@@ -127,6 +141,7 @@ def make_pasting_table(pasted_text, pasted_text_time):
     canvas.create_window((0, 0), window=frame, anchor="nw")
     frame._widgets = []
 
+    # Number of rows
     numbers = ["No"]
     for i in range(len(pasted_text)):
         numbers.append(str(i+1))
@@ -136,6 +151,7 @@ def make_pasting_table(pasted_text, pasted_text_time):
 
     data = [numbers, pasted_text_time_info, pasted_text_info]
 
+    # Adding rows with all the data
     for row in range(len(numbers)):
         current_row = []
         for column in range(len(data)):
@@ -144,11 +160,13 @@ def make_pasting_table(pasted_text, pasted_text_time):
             current_row.append(label)
         frame._widgets.append(current_row)
 
+    # Adding scrollbar
     vsb = Scrollbar(page4, orient="vertical", command=canvas.yview)
     vsb.grid(row=0, column=1, sticky='ns')
     canvas.configure(yscrollcommand=vsb.set)
     canvas.configure(scrollregion=canvas.bbox("all"))
 
+    # Connecting canvas movement to scrollbar
     frame.bind("<Configure>", lambda event, canvas=canvas: canvas.configure(scrollregion=canvas.bbox("all")))
 
     frame.grid_columnconfigure(0, weight=1)
@@ -167,6 +185,7 @@ def make_error_table(error_time, error_type, error_message):
     canvas.create_window((0, 0), window=frame, anchor="nw")
     frame._widgets = []
 
+    # Number of rows
     numbers = ["No"]
     for i in range(len(error_time)):
         numbers.append(str(i+1))
@@ -177,6 +196,7 @@ def make_error_table(error_time, error_type, error_message):
 
     data = [numbers, error_time_info, error_type_info, error_message_info]
 
+    # Adding rows with all the data
     for row in range(len(numbers)):
         current_row = []
         for column in range(len(data)):
@@ -185,22 +205,26 @@ def make_error_table(error_time, error_type, error_message):
             current_row.append(label)
         frame._widgets.append(current_row)
 
+    # Adding scrollbar
     vsb = Scrollbar(page5, orient="vertical", command=canvas.yview)
     vsb.grid(row=0, column=1, sticky='ns')
     canvas.configure(yscrollcommand=vsb.set)
     canvas.configure(scrollregion=canvas.bbox("all"))
 
+    # Connecting canvas movement to scrollbar
     frame.bind("<Configure>", lambda event, canvas=canvas: canvas.configure(scrollregion=canvas.bbox("all")))
 
     frame.grid_columnconfigure(0, weight=1)
     frame.grid_columnconfigure(1, weight=1)
     frame.grid_columnconfigure(2, weight=1)
 
+# Function for making csv file with specific data
 def make_csv(filename, type, data, labels):
     with open(filename[:-4] + "_" + type + ".csv", "w+", newline="") as data_file:
         data_file_writer = csv.writer(data_file, delimiter=",")
         data_file_writer.writerow(labels)
 
+        # Write data into csv file
         for i in range(len(data[0])-1):
             row = []
             for d in data:
@@ -219,23 +243,35 @@ def make_csvs(filename, file_analysation):
     # making csv with runnings data
     make_csv(filename, "runnings", [file_analysation['running'], file_analysation['running_results_in_error']], ["running", "running_results_in_error"])
 
+    # Show information about generated files
     messagebox.showinfo("CSV-failid", "CSV-failid salvestatud kausta " + initialdir)
 
-#todo: vigase logifaili puhul kasutajale teave
 #Function for log file analysation
 def file_analysis():
     global filepath
+
+    # if file and at least one analysation type is chosen then do analysation
     if (chk_csv_var.get() != 0 or chk_graphic_var.get() != 0) and filepath != "":
+        # do file analysation
         file_analysation = analysation.analysation(filepath, int(spin.get()))
-        if chk_csv_var.get() == 1:
-            make_csvs(filepath, file_analysation)
-        if chk_graphic_var.get() == 1:
-            plot_pie_chart(file_analysation['error_type'])
-            make_pasting_table(file_analysation['pasted_text'], file_analysation['pasted_text_time'])
-            make_error_table(file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message'])
-            if len(file_analysation['running']) > 0:
-                event_plot(file_analysation['running'], file_analysation['running_results_in_error'], file_analysation['start_time'][0])
-            present_overall_analysation(file_analysation)
+
+        # if file analysation wasn't a success because of the logfile then show message about it
+        if not file_analysation:
+            filename = filepath.rsplit("/", 1)[1]
+            messagebox.showinfo("Vigane fail", "Logifail " + filename + " on vigane ja analüüsi ei saa teha.")
+        # file analysation was a success
+        else:
+            # make all csv files
+            if chk_csv_var.get() == 1:
+                make_csvs(filepath, file_analysation)
+            # make all subpages
+            if chk_graphic_var.get() == 1:
+                plot_pie_chart(file_analysation['error_type'])
+                make_pasting_table(file_analysation['pasted_text'], file_analysation['pasted_text_time'])
+                make_error_table(file_analysation['error_time'], file_analysation['error_type'], file_analysation['error_message'])
+                if len(file_analysation['running']) > 0:
+                    event_plot(file_analysation['running'], file_analysation['running_results_in_error'], file_analysation['start_time'][0])
+                present_overall_analysation(file_analysation)
 
 # function for opening a file
 def file_dialog():
@@ -297,6 +333,7 @@ chk_csv.grid(column=0, row=0, padx=5, pady=5, sticky="e")
 chk_graphic_var = IntVar()
 chk_graphic = Checkbutton(start_frame, text='Analüüs graafilises liideses', variable=chk_graphic_var, bg="lightgrey")
 chk_graphic.grid(column=1, row=0, padx=5, pady=5, sticky="w")
+chk_graphic.select()
 
 pasted_frame = Frame(start_frame, bg="lightgrey")
 pasted_frame.grid(row=1, columnspan=2)
