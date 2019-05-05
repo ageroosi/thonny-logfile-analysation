@@ -1,15 +1,15 @@
 # Thonny logifailide analüüs
 
-Tegemist on bakalaureusetööna loodava programmiga, mis suudab automaatselt analüüsida kontrolltöödel kogutud logifaile.
+Tegemist on bakalaureusetööna loodava programmiga, mis suudab automaatselt analüüsida kogutud logifaile.
 
 ## Töörežiimid ##
 
 Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
 
 ### Analüüs graafilises liideses ###
-Selle abil on võimalik näha üldist analüüsi kontrolltöö logifaili kohta kasutajaliideses.
+Selle abil on võimalik näha üldist analüüsi logifaili kohta kasutajaliideses.
 Kasutajale kuvatakse järgnev informatsioon.
-* Üldinfo - Kuvatakse töö lahendamise algus- ja lõppaeg ning kestus. Samuti veateadete arv, käivitamiste kordade arv, veateadetega järgnenud käivitamiste kordade arv ning rohkem kui **n** tähemärki pikkade tekstilõikude kleepimiste arv, kus **n** on kasutaja poolt valitud minimaalse kleebitud teksti pikkus. Vaikeväärtus minimaalse kleebitud pikkuse jaoks on 0.
+* Üldinfo - Kuvatakse lahendamise algus- ja lõppaeg ning kestus. Samuti veateadete arv, käivitamiste kordade arv, veateadetega järgnenud käivitamiste kordade arv ning rohkem kui **n** tähemärki pikkade tekstilõikude kleepimiste arv, kus **n** on kasutaja poolt valitud minimaalse kleebitud teksti pikkus. Vaikeväärtus minimaalse kleebitud pikkuse jaoks on 0.
 * Veatüübid - Sektrodiagramm, kus tuuakse välja erinevad veateated, mis kasutajal esinesid, ning nende esinemiste kordade arv.
 * Käivitamised - Sündmusegraafik, kus on näha ajajoonel käivitamised, millele järgnes veateade ehk programmi töös oli midagi valesti, ja käivitamised, millele ei järgnenud veateadet ehk programmitöö oli edukas.
 * Kleebitud tekstid - Tabel, kus kuvatakse vähemalt **n** pikkusega kleebitud tekstid koos ajatemplitega.
@@ -27,14 +27,13 @@ Kasutajale salvestatkse järgnevad CSV-failid samasse kausta, kus asus vaadeldav
 ### Minimaalne kleebitud teksti pikkus: ### 
 Selle abil saab kasutaja täpsustada, kui pikk peab olema välja sorteeritud kleebitud tekstide minimaalne pikkus. Vaikeväärtus on 0.
 
-
 ## Töö käik ##
 
 1. Valida vähemalt üks töörežiim või soovi korral ka mõlemad.
 2. Soovi korral täpsustada lisaparameetrid.
 3. Valida fail klõpastes nuppu "Vali logifail (.txt)". Tegemist saab olla ainult txt-failivorminguga ning peaks valima ainult korrektse logifaili.
-4. Kui valiti fail, siis genereeritakse vastavalt esimeses punktis tehtud valikule graafilisse liidesesse analüüs, CSV-failid või mõlemad.
-5. Kui on soov vaadelda uut logifaili, siis piisab ainult korrata punkti 3, kui ei ole soovi töörežiimi või lisaparameetreid muuta.
+4. Klõpsates nupule "Tee analüüs" genereeritakse logifaili põhjal vastavalt esimeses punktis tehtud valikule graafilisse liidesesse analüüs, CSV-failid või mõlemad.
+5. Kui on soov vaadelda uut logifaili, siis piisab ainult korrata punkti 3, kui ei ole soovi töörežiimi või lisaparameetreid muuta. Kui 
 
 ## Programmi käivitamine ##
 
