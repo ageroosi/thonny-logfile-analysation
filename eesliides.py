@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 from tkinter import *
 from tkinter import (ttk, filedialog)
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
