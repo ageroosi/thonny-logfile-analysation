@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import json
 from collections import defaultdict
 import dateutil.parser
