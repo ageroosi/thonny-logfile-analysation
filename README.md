@@ -4,7 +4,7 @@ Tegemist on bakalaureusetööna loodava programmiga, mis suudab automaatselt ana
 
 ## Töörežiimid ##
 
-Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
+Vaikeväärtusena on valitud analüüs graafilises liideses. Kasutajal on võimalik valida ka mõlemad töörežiimid korraga.
 
 ### Analüüs graafilises liideses ###
 Selle abil on võimalik näha üldist analüüsi logifaili kohta kasutajaliideses.
