@@ -33,7 +33,7 @@ Selle abil saab kasutaja täpsustada, kui pikk peab olema välja sorteeritud kle
 2. Soovi korral täpsustada lisaparameetrid.
 3. Valida fail klõpastes nuppu "Vali logifail (.txt)". Tegemist saab olla ainult txt-failivorminguga ning peaks valima ainult korrektse logifaili.
 4. Klõpsates nupule "Tee analüüs" genereeritakse logifaili põhjal vastavalt esimeses punktis tehtud valikule graafilisse liidesesse analüüs, CSV-failid või mõlemad.
-5. Kui on soov vaadelda uut logifaili, siis piisab ainult korrata punkti 3, kui ei ole soovi töörežiimi või lisaparameetreid muuta. Kui 
+5. Kui on soov vaadelda uut logifaili, siis piisab ainult korrata punkti 3, kui ei ole soovi töörežiimi või lisaparameetreid muuta. 
 
 ## Programmi käivitamine ##
 
