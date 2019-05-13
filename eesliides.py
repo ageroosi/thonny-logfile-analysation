@@ -152,14 +152,15 @@ def make_pasting_table(pasted_text, pasted_text_time):
     pasted_text_info = ["Kleebitud tekst"] + pasted_text
 
     data = [numbers, pasted_text_time_info, pasted_text_info]
+    widths = [50, 150, 550]
 
     # Adding rows with all the data
     for row in range(len(numbers)):
         current_row = []
         for column in range(len(data)):
-            label = Label(frame, text=data[column][row], borderwidth=0)
-            label.grid(row=row, column=column, sticky="nw", padx=3, pady=5)
-            current_row.append(label)
+            message = Message(frame, text=data[column][row], width = widths[column], borderwidth=0)
+            message.grid(row=row, column=column, sticky="wn", padx=3, pady=5)
+            current_row.append(message)
         frame._widgets.append(current_row)
 
     # Adding scrollbar
