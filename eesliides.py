@@ -131,7 +131,7 @@ def event_plot(running, running_results_in_error, start_time):
     canvas.get_tk_widget().grid(row=0, column=0)
     canvas.draw()
 
-# Function for making table
+# Function for making pasting table
 def make_pasting_table(pasted_text, pasted_text_time):
     page4.grid_columnconfigure(0, weight=1)
     page4.grid_rowconfigure(0, weight=1)
@@ -176,7 +176,7 @@ def make_pasting_table(pasted_text, pasted_text_time):
     frame.grid_columnconfigure(1, weight=1)
     frame.grid_columnconfigure(2, weight=1)
 
-# Function for making table
+# Function for making error table
 def make_error_table(error_time, error_type, error_message):
     page5.grid_columnconfigure(0, weight=1)
     page5.grid_rowconfigure(0, weight=1)
@@ -264,6 +264,11 @@ def file_analysis():
             messagebox.showinfo("Vigane fail", "Logifail " + filename + " on vigane ja analüüsi ei saa teha.")
         # file analysation was a success
         else:
+            #remove previous information
+            for page in [page1, page2, page3, page4, page5]:
+                for widget in page.winfo_children():
+                    widget.destroy()
+
             # make all csv files
             if chk_csv_var.get() == 1:
                 make_csvs(filepath, file_analysation)
