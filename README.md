@@ -38,3 +38,5 @@ Selle abil saab kasutaja täpsustada, kui pikk peab olema välja sorteeritud kle
 ## Programmi käivitamine ##
 
 Programm on loodud kasutades Pythoni versiooni 3.7. Käivitada tuleb eesliides.py. Pythoni versioonis ei ole automaatselt sees mooduleid matplotlib, numpy ja dateutil, seega need tuleb pip abil paigaldada.
+
+Testimiseks on lisatud ka näidislogifail "2019-03-29_08-17-04_0.txt"
